@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Volunteer Dashboard - UWC Compass{% endblock %}
+
+{% block content %}
+
+<div class="admin-header">
+    <div>
+        <h1>Volunteer Dashboard</h1>
+        <p style="color: var(--text-mid); margin-top: var(--space-xs);">
+            Logged in as <strong>{{ session.username }}</strong> (Volunteer Moderator)
+        </p>
+    </div>
+    <a href="{{ url_for('volunteer_logout') }}" class="btn btn--outline btn--small">Log Out</a>
+</div>
+
+<div class="notice-box" style="background: #e8f4fd; border-color: #b3d9f2;">
+    <h3 style="color: #1a5276;">Moderation Guidelines</h3>
+    <p style="color: #1a5276;">
+        Review each essay for authenticity. Verify the screenshot shows a legitimate second-round notification.
+        You <strong>must</strong> provide a reason for each decision. Admin can review your actions.
+    </p>
+</div>
+
+{% if pending_essays %}
+    {% for entry in pending_essays %}
+    {% set essay_data = entry['essays_json']|from_json %}
+    <div class="admin-card">
+        <div class="admin-card__header">
+            <div>
+                <h3>{{ entry['name'] }} - {{ entry['country'] }}</h3>
+                <span class="badge badge--pending">Pending Review</span>
+                {% if entry['flagged'] %}
+                <span class="badge badge--rejected">Flagged</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="admin-card__meta">
+            <span><strong>Committee:</strong> {{ entry['national_committee'] }}</span>
+            <span><strong>Year:</strong> {{ entry['year_applied'] }}</span>
+            <span><strong>Interview:</strong>
+                {% if entry['interview_status'] == 'yes' %}Yes
+                {% elif entry['interview_status'] == 'no' %}No
+                {% else %}Pending{% endif %}
+            </span>
+            {% if entry['email'] %}<span><strong>Email:</strong> {{ entry['email'] }}</span>{% endif %}
+            <span><strong>Essays:</strong> {{ essay_data|length }}</span>
+        </div>
+
+        <!-- Display essays -->
+        {% for item in essay_data %}
+        <div style="margin-top: var(--space-md);">
+            <h4>Essay {{ loop.index }}{% if item['prompt'] %}: {{ item['prompt'] }}{% endif %}</h4>
+            <div class="admin-card__essay-text">{{ item['response'] }}</div>
+        </div>
+        {% endfor %}
+
+        {% if entry['document_path'] %}
+        <div style="margin-top: var(--space-sm);">
+            <strong>Document:</strong>
+            <a href="{{ url_for('volunteer_view_upload', filename=entry['document_path']) }}" target="_blank" class="btn btn--outline btn--small">View Document</a>
+        </div>
+        {% endif %}
+
+        <!-- Screenshot -->
+        <h4 style="margin-top: var(--space-md); margin-bottom: var(--space-sm);">Verification Screenshot</h4>
+        <div class="admin-card__screenshot">
+            <img src="{{ url_for('volunteer_view_upload', filename=entry['screenshot_path']) }}"
+                 alt="Verification screenshot" loading="lazy">
+        </div>
+
+        <!-- Accept / Reject with reason -->
+        <div class="volunteer-actions" style="margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 1px solid var(--border);">
+            <h4 style="margin-bottom: var(--space-sm);">Your Decision</h4>
+
+            <div class="form-group" style="margin-bottom: var(--space-md);">
+                <label for="reason_{{ entry['id'] }}">Reason for your decision <span class="required">*</span></label>
+                <textarea id="reason_{{ entry['id'] }}" form="form_approve_{{ entry['id'] }}" name="reason" required rows="3"
+                          placeholder="Explain why you are accepting or rejecting this essay..."></textarea>
+            </div>
+
+            <div class="admin-card__actions" style="justify-content: flex-start;">
+                <form id="form_approve_{{ entry['id'] }}" method="POST"
+                      action="{{ url_for('volunteer_essay_action', essay_id=entry['id'], action='approved') }}" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn--success btn--small">Accept Essay</button>
+                </form>
+
+                <form method="POST"
+                      action="{{ url_for('volunteer_essay_action', essay_id=entry['id'], action='rejected') }}" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="reason" value="">
+                    <button type="submit" class="btn btn--danger btn--small"
+                            onclick="this.form.reason.value = document.getElementById('reason_{{ entry['id'] }}').value; if(!this.form.reason.value.trim()){alert('Please write a reason first.');return false;}">Reject Essay</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <p>No pending essays to review. Check back later!</p>
+    </div>
+{% endif %}
+
+{% endblock %}

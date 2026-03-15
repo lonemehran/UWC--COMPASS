@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ essay['name'] }}'s UWC Essays - UWC Compass{% endblock %}
+
+{% block content %}
+
+{% set essays_data = essay['essays_json']|from_json %}
+
+<article class="essay-reading">
+    <header class="essay-reading__header">
+        <h1>Essays by {{ essay['name'] }}</h1>
+        <div class="essay-reading__meta-grid">
+            <div class="meta-item">
+                <strong>Country</strong>
+                <span>{{ essay['country'] }}</span>
+            </div>
+            <div class="meta-item">
+                <strong>National Committee</strong>
+                <span>{{ essay['national_committee'] }}</span>
+            </div>
+            <div class="meta-item">
+                <strong>Year Applied</strong>
+                <span>{{ essay['year_applied'] }}</span>
+            </div>
+            <div class="meta-item">
+                <strong>Interview Status</strong>
+                <span>
+                    {% if essay['interview_status'] == 'yes' %}Selected for Interview
+                    {% elif essay['interview_status'] == 'no' %}Not Selected
+                    {% else %}Results Pending{% endif %}
+                </span>
+            </div>
+        </div>
+    </header>
+
+    {% for item in essays_data %}
+    <section class="essay-reading__essay">
+        <div class="essay-reading__essay-header">
+            <span class="essay-reading__essay-number">Essay {{ loop.index }}</span>
+            {% if item['prompt'] %}
+            <h2>{{ item['prompt'] }}</h2>
+            {% endif %}
+        </div>
+        <div class="essay-reading__body">{{ item['response'] }}</div>
+    </section>
+    {% endfor %}
+
+    {% if essay['document_path'] %}
+    <section class="essay-reading__document">
+        <h3>Uploaded Document</h3>
+        <p>
+            This applicant also uploaded their essays as a document.
+            <a href="{{ url_for('admin_view_document', filename=essay['document_path']) }}" class="btn btn--outline btn--small" target="_blank">View Document</a>
+        </p>
+    </section>
+    {% endif %}
+
+    <div class="essay-reading__back">
+        <a href="{{ url_for('essays') }}" class="btn btn--outline">&larr; Back to all essays</a>
+    </div>
+</article>
+
+{% endblock %}

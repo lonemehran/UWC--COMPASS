@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Volunteer Login - UWC Compass{% endblock %}
+
+{% block content %}
+
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-card__icon">&#128101;</div>
+        <h1>Volunteer Login</h1>
+        <p style="color: var(--text-mid); margin-bottom: var(--space-xl);">
+            Enter the credentials provided to you by the admin team.
+        </p>
+
+        <form method="POST" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required placeholder="vol_yourname_xxxxxx" autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="access_key">Access Key</label>
+                <input type="password" id="access_key" name="access_key" required placeholder="Your secret access key" autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn--primary" style="width:100%;">Log In</button>
+        </form>
+
+        <p style="margin-top: var(--space-lg); font-size: 0.8125rem; color: var(--text-light);">
+            Want to become a volunteer? <a href="{{ url_for('volunteer') }}">Apply here</a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

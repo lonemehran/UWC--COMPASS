@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - UWC Compass{% endblock %}
+
+{% block content %}
+
+<div class="admin-header">
+    <div>
+        <h1>Admin Dashboard</h1>
+        <p style="color: var(--text-mid); margin-top: var(--space-xs);">
+            Logged in as <strong>{{ session.username }}</strong> (Admin)
+        </p>
+    </div>
+    <div style="display: flex; gap: var(--space-sm); align-items: center;">
+        <!-- Maintenance Toggle -->
+        <form method="POST" action="{{ url_for('admin_toggle_maintenance') }}" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if maintenance %}
+            <button type="submit" class="btn btn--success btn--small">Enable Submissions</button>
+            {% else %}
+            <button type="submit" class="btn btn--danger btn--small">Pause Submissions</button>
+            {% endif %}
+        </form>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn--outline btn--small">Log Out</a>
+    </div>
+</div>
+
+{% if maintenance %}
+<div class="notice-box" style="background: #fce4e4; border-color: #e88; margin-bottom: var(--space-xl);">
+    <h3 style="color: #922b21;">Maintenance Mode Active</h3>
+    <p style="color: #922b21; margin: 0;">Essay submissions are currently paused.</p>
+</div>
+{% endif %}
+
+<!-- Tabs -->
+<div class="admin-tabs">
+    <button class="admin-tab active" onclick="switchTab('pending-essays')">
+        Pending
+        {% if pending_essays %}<span class="count-badge">{{ pending_essays|length }}</span>{% endif %}
+    </button>
+    <button class="admin-tab" onclick="switchTab('approved-essays')">Approved ({{ approved_essays|length }})</button>
+    <button class="admin-tab" onclick="switchTab('rejected-essays')">Rejected ({{ rejected_essays|length }})</button>
+    <button class="admin-tab" onclick="switchTab('flagged-essays')">
+        Flagged
+        {% if flagged_essays %}<span class="count-badge" style="background:var(--gold);">{{ flagged_essays|length }}</span>{% endif %}
+    </button>
+    <button class="admin-tab" onclick="switchTab('mod-applications')">
+        Moderators
+        {% if pending_mods %}<span class="count-badge">{{ pending_mods|length }}</span>{% endif %}
+    </button>
+    <button class="admin-tab" onclick="switchTab('volunteers-tab')">Volunteers ({{ active_volunteers|length }})</button>
+    <button class="admin-tab" onclick="switchTab('blocked-tab')">Blocked ({{ blocked_users|length }})</button>
+    <button class="admin-tab" onclick="switchTab('audit-tab')">Audit Log</button>
+</div>
+
+<!-- ===== PENDING ESSAYS ===== -->
+<div id="pending-essays" class="admin-section active">
+    {% if pending_essays %}
+        {% for entry in pending_essays %}
+        {% set essay_data = entry['essays_json']|from_json %}
+        <div class="admin-card {% if entry['flagged'] %}admin-card--flagged{% endif %}">
+            <div class="admin-card__header">
+                <div>
+                    <h3>{{ entry['name'] }} - {{ entry['country'] }}</h3>
+                    <span class="badge badge--pending">Pending</span>
+                    {% if entry['flagged'] %}<span class="badge badge--rejected">Flagged</span>{% endif %}
+                </div>
+                <div class="admin-card__actions">
+                    <form method="POST" action="{{ url_for('admin_essay_action', essay_id=entry['id'], action='approved') }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn--success btn--small">Approve</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_essay_action', essay_id=entry['id'], action='rejected') }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn--danger btn--small">Reject</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_essay_flag', essay_id=entry['id']) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn--outline btn--small">{{ 'Unflag' if entry['flagged'] else 'Flag' }}</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_essay_delete', essay_id=entry['id']) }}" style="display:inline;"
+                          onsubmit="return confirm('Permanently delete this essay?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn--danger btn--small" style="background: #2c2c2c;">Delete</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="admin-card__meta">
+                <span><strong>Committee:</strong> {{ entry['national_committee'] }}</span>
+                <span><strong>Year:</strong> {{ entry['year_applied'] }}</span>
+                <span><strong>Interview:</strong> {{ entry['interview_status'] }}</span>
+                {% if entry['email'] %}<span><strong>Email:</strong> {{ entry['email'] }}</span>{% endif %}
+                <span><strong>Essays:</strong> {{ essay_data|length }}</span>
+                <span><strong>Submitted:</strong> {{ entry['created_at'][:16] }}</span>
+                {% if entry['moderated_by'] %}<span><strong>Moderated by:</strong> {{ entry['moderated_by'] }}</span>{% endif %}
+            </div>
+
+            {% for item in essay_data %}
+            <div style="margin-top: var(--space-md);">
+                <h4>Essay {{ loop.index }}{% if item['prompt'] %}: {{ item['prompt'] }}{% endif %}</h4>
+                <div class="admin-card__essay-text">{{ item['response'] }}</div>
+            </div>
+            {% endfor %}
+
+            {% if entry['document_path'] %}
+            <div style="margin-top: var(--space-md);">
+                <a href="{{ url_for('admin_view_document', filename=entry['document_path']) }}" class="btn btn--outline btn--small" target="_blank">View Document</a>
+            </div>
+            {% endif %}
+
+            <h4 style="margin-top: var(--space-md); margin-bottom: var(--space-sm);">Screenshot</h4>
+            <div class="admin-card__screenshot">
+                <img src="{{ url_for('admin_view_upload', filename=entry['screenshot_path']) }}" alt="Screenshot" loading="lazy">
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state"><p>No pending essays.</p></div>
+    {% endif %}
+</div>
+
+<!-- ===== APPROVED ===== -->
+<div id="approved-essays" class="admin-section">
+    {% if approved_essays %}
+        {% for entry in approved_essays %}
+        <div class="admin-card">
+            <div class="admin-card__header">
+                <div><h3>{{ entry['name'] }} - {{ entry['country'] }}</h3><span class="badge badge--approved">Approved</span></div>
+                <div class="admin-card__actions">
+                    <form method="POST" action="{{ url_for('admin_essay_action', essay_id=entry['id'], action='rejected') }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn--danger btn--small">Revoke</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_essay_delete', essay_id=entry['id']) }}" style="display:inline;" onsubmit="return confirm('Delete?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn--danger btn--small" style="background: #2c2c2c;">Delete</button>
+                    </form>
+                </div>
+            </div>
+            <div class="admin-card__meta">
+                <span><strong>Committee:</strong> {{ entry['national_committee'] }}</span>
+                <span><strong>Year:</strong> {{ entry['year_applied'] }}</span>
+                {% if entry['moderated_by'] %}<span><strong>By:</strong> {{ entry['moderated_by'] }}</span>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state"><p>No approved essays.</p></div>
+    {% endif %}
+</div>
+
+<!-- ===== REJECTED ===== -->
+<div id="rejected-essays" class="admin-section">
+    {% if rejected_essays %}
+        {% for entry in rejected_essays %}
+        <div class="admin-card">
+            <div class="admin-card__header">
+                <div><h3>{{ entry['name'] }} - {{ entry['country'] }}</h3><span class="badge badge--rejected">Rejected</span></div>
+                <div class="admin-card__actions">
+                    <form method="POST" action="{{ url_for('admin_essay_action', essay_id=entry['id'], action='approved') }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn--success btn--small">Re-approve</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_essay_delete', essay_id=entry['id']) }}" style="display:inline;" onsubmit="return confirm('Delete?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn--danger btn--small" style="background: #2c2c2c;">Delete</button>
+                    </form>
+                </div>
+            </div>
+            <div class="admin-card__meta">
+                <span><strong>Committee:</strong> {{ entry['national_committee'] }}</span>
+                {% if entry['moderated_by'] %}<span><strong>By:</strong> {{ entry['moderated_by'] }}</span>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state"><p>No rejected essays.</p></div>
+    {% endif %}
+</div>
+
+<!-- ===== FLAGGED ===== -->
+<div id="flagged-essays" class="admin-section">
+    {% if flagged_essays %}
+        {% for entry in flagged_essays %}
+        <div class="admin-card admin-card--flagged">
+            <div class="admin-card__header">
+                <div><h3>{{ entry['name'] }} - {{ entry['country'] }}</h3><span class="badge badge--rejected">Flagged</span><span class="badge badge--{{ entry['status'] }}">{{ entry['status'] }}</span></div>
+                <div class="admin-card__actions">
+                    <form method="POST" action="{{ url_for('admin_essay_flag', essay_id=entry['id']) }}" style="display:inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn--outline btn--small">Unflag</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_essay_delete', essay_id=entry['id']) }}" style="display:inline;" onsubmit="return confirm('Delete?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn--danger btn--small" style="background: #2c2c2c;">Delete</button>
+                    </form>
+                </div>
+            </div>
+            <div class="admin-card__meta">
+                <span><strong>Email:</strong> {{ entry['email'] or 'N/A' }}</span>
+                <span><strong>Status:</strong> {{ entry['status'] }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state"><p>No flagged essays.</p></div>
+    {% endif %}
+</div>
+
+<!-- ===== MODERATOR APPLICATIONS ===== -->
+<div id="mod-applications" class="admin-section">
+    {% if pending_mods %}
+    <h2 style="margin-bottom: var(--space-lg);">Pending Applications</h2>
+    {% for mod in pending_mods %}
+    <div class="admin-card">
+        <div class="admin-card__header">
+            <div><h3>{{ mod['name'] }}</h3><span class="badge badge--pending">Pending</span></div>
+            <div class="admin-card__actions">
+                <form method="POST" action="{{ url_for('admin_mod_action', mod_id=mod['id'], action='accepted') }}" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn--success btn--small">Accept</button>
+                </form>
+                <form method="POST" action="{{ url_for('admin_mod_action', mod_id=mod['id'], action='rejected') }}" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn--danger btn--small">Reject</button>
+                </form>
+            </div>
+        </div>
+        <div class="admin-card__meta">
+            <span><strong>Email:</strong> {{ mod['email'] }}</span>
+            <span><strong>Country:</strong> {{ mod['country'] }}</span>
+        </div>
+        <div class="admin-card__essay-text" style="margin-top: var(--space-md);">{{ mod['motivation'] }}</div>
+        {% if mod['id_photo_path'] %}
+        <div style="margin-top: var(--space-md);">
+            <strong>Government ID:</strong>
+            <div class="admin-card__screenshot">
+                <img src="{{ url_for('admin_view_volunteer_id', filename=mod['id_photo_path']) }}" alt="ID Photo" loading="lazy">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state" style="margin-bottom: var(--space-xl);"><p>No pending applications.</p></div>
+    {% endif %}
+
+    {% if processed_mods %}
+    <h2 style="margin-bottom: var(--space-lg);">Processed Applications</h2>
+    {% for mod in processed_mods %}
+    <div class="admin-card">
+        <div class="admin-card__header">
+            <div><h3>{{ mod['name'] }}</h3><span class="badge badge--{{ mod['status'] }}">{{ mod['status'] }}</span></div>
+            {% if mod['status'] == 'accepted' %}
+            <form method="POST" action="{{ url_for('admin_create_volunteer', mod_id=mod['id']) }}" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn--primary btn--small">Generate Credentials</button>
+            </form>
+            {% endif %}
+        </div>
+        <div class="admin-card__meta">
+            <span><strong>Email:</strong> {{ mod['email'] }}</span>
+            <span><strong>Country:</strong> {{ mod['country'] }}</span>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<!-- ===== ACTIVE VOLUNTEERS ===== -->
+<div id="volunteers-tab" class="admin-section">
+    {% if active_volunteers %}
+    {% for vol in active_volunteers %}
+    <div class="admin-card">
+        <div class="admin-card__header">
+            <div>
+                <h3>{{ vol['name'] }}</h3>
+                <span class="badge badge--approved">Active</span>
+            </div>
+            <form method="POST" action="{{ url_for('admin_deactivate_volunteer', vol_id=vol['id']) }}" style="display:inline;" onsubmit="return confirm('Deactivate this volunteer?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn--danger btn--small">Deactivate</button>
+            </form>
+        </div>
+        <div class="admin-card__meta">
+            <span><strong>Username:</strong> {{ vol['username'] }}</span>
+            <span><strong>Email:</strong> {{ vol['email'] }}</span>
+            <span><strong>Since:</strong> {{ vol['created_at'][:10] }}</span>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state"><p>No active volunteers.</p></div>
+    {% endif %}
+</div>
+
+<!-- ===== BLOCKED USERS ===== -->
+<div id="blocked-tab" class="admin-section">
+    <!-- Block form -->
+    <div class="admin-card" style="margin-bottom: var(--space-xl);">
+        <h3 style="margin-bottom: var(--space-md);">Block a User</h3>
+        <form method="POST" action="{{ url_for('admin_block_user') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="block-email">Email</label>
+                    <input type="email" id="block-email" name="email" placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="block-name">Name</label>
+                    <input type="text" id="block-name" name="name" placeholder="User name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="block-reason">Reason <span class="required">*</span></label>
+                <input type="text" id="block-reason" name="reason" required placeholder="Reason for blocking">
+            </div>
+            <button type="submit" class="btn btn--danger btn--small">Block User</button>
+        </form>
+    </div>
+
+    {% if blocked_users %}
+    {% for bu in blocked_users %}
+    <div class="admin-card">
+        <div class="admin-card__header">
+            <div>
+                <h3>{{ bu['name'] or bu['email'] }}</h3>
+                <span class="badge badge--rejected">Blocked</span>
+            </div>
+            <form method="POST" action="{{ url_for('admin_unblock_user', block_id=bu['id']) }}" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn--outline btn--small">Unblock</button>
+            </form>
+        </div>
+        <div class="admin-card__meta">
+            {% if bu['email'] %}<span><strong>Email:</strong> {{ bu['email'] }}</span>{% endif %}
+            {% if bu['name'] %}<span><strong>Name:</strong> {{ bu['name'] }}</span>{% endif %}
+            <span><strong>Reason:</strong> {{ bu['reason'] }}</span>
+            <span><strong>By:</strong> {{ bu['blocked_by'] }}</span>
+            <span><strong>Date:</strong> {{ bu['created_at'][:10] }}</span>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state"><p>No blocked users.</p></div>
+    {% endif %}
+</div>
+
+<!-- ===== AUDIT LOG ===== -->
+<div id="audit-tab" class="admin-section">
+    {% if audit_logs %}
+    <div class="audit-table-wrapper">
+        <table class="audit-table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Actor</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                    <th>Target</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in audit_logs %}
+                <tr>
+                    <td>{{ log['created_at'][:16] }}</td>
+                    <td>{{ log['actor'] }}</td>
+                    <td><span class="badge badge--{{ 'approved' if log['role'] == 'admin' else 'pending' }}">{{ log['role'] }}</span></td>
+                    <td>{{ log['action'] }}</td>
+                    <td>{{ log['target_type'] }} #{{ log['target_id'] or '' }}</td>
+                    <td>{{ log['reason'] or log['details'] or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><p>No actions recorded yet.</p></div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.admin-section').forEach(function(s) { s.classList.remove('active'); });
+        document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+        document.getElementById(tabId).classList.add('active');
+        event.target.closest('.admin-tab').classList.add('active');
+    }
+</script>
+{% endblock %}

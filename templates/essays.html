@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Essays - UWC Compass{% endblock %}
+
+{% block content %}
+
+<div class="form-page__intro">
+    <h1>UWC Application Essays</h1>
+    <p>
+        Every essay below was written by an applicant who reached the second round of
+        their UWC national committee selection - verified by our moderator team.
+        Read, learn, and find your own voice.
+    </p>
+</div>
+
+{% if essays %}
+<div class="essay-list">
+    {% for entry in essays %}
+    {% set essay_data = entry['essays_json']|from_json %}
+    <article class="essay-card">
+        <div class="essay-card__meta">
+            <span class="author">{{ entry['name'] }}</span>
+            <span>&middot;</span>
+            <span>{{ entry['country'] }}</span>
+            <span>&middot;</span>
+            <span>{{ entry['national_committee'] }}</span>
+            <span>&middot;</span>
+            <span>Applied {{ entry['year_applied'] }}</span>
+        </div>
+
+        {% if essay_data %}
+        <h3>
+            <a href="{{ url_for('essay_detail', essay_id=entry['id']) }}">
+                {% if essay_data[0]['prompt'] %}
+                    {{ essay_data[0]['prompt'] }}
+                {% else %}
+                    Essays by {{ entry['name'] }}
+                {% endif %}
+            </a>
+        </h3>
+        <p class="essay-card__preview">{{ essay_data[0]['response'][:250] }}{% if essay_data[0]['response']|length > 250 %}&hellip;{% endif %}</p>
+        {% endif %}
+
+        <div class="essay-card__footer">
+            <span class="essay-card__count">{{ essay_data|length }} essay{{ 's' if essay_data|length != 1 }}</span>
+            {% if entry['interview_status'] == 'yes' %}
+            <span class="badge badge--approved">Selected for Interview</span>
+            {% elif entry['interview_status'] == 'pending' %}
+            <span class="badge badge--pending">Results Pending</span>
+            {% endif %}
+            <a href="{{ url_for('essay_detail', essay_id=entry['id']) }}" class="essay-card__link">Read essays &rarr;</a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>No essays published yet.</p>
+    <p style="margin-top: var(--space-md);">
+        <a href="{{ url_for('submit') }}" class="btn btn--primary">Be the first to submit</a>
+    </p>
+</div>
+{% endif %}
+
+{% endblock %}

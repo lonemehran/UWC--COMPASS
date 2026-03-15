@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}UWC Compass - Navigate the UWC Selection Process{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero__image">
+        <img src="{{ url_for('static', filename='images/hero-banner.png') }}" alt="UWC students">
+        <div class="hero__overlay"></div>
+    </div>
+    <div class="hero__content">
+        <p class="hero__mission">"Making education a force to unite people, nations and cultures for peace and a sustainable future."</p>
+        <h1>Navigate the UWC Selection Process</h1>
+        <p>
+            A student-built resource where applicants who reached the second round of
+            <strong>United World Colleges</strong> selection share their essays - helping future
+            candidates prepare with real examples.
+        </p>
+        {% if essay_count > 0 %}
+        <span class="hero__stat">{{ essay_count }} verified essay{{ 's' if essay_count != 1 }} shared so far</span>
+        {% endif %}
+        <div class="hero__actions">
+            <a href="{{ url_for('essays') }}" class="btn btn--gold">Browse Essays</a>
+            <a href="{{ url_for('submit') }}" class="btn btn--outline" style="border-color: rgba(255,255,255,0.4); color: #fff;">Share Your Essay</a>
+        </div>
+    </div>
+</section>
+
+<!-- Feature Cards -->
+<section class="cards">
+    <div class="card">
+        <span class="card__icon">&#128214;</span>
+        <h3>Read Real Essays</h3>
+        <p>
+            Browse essays from applicants who made it to the second round of UWC national
+            committee selections. Every submission is verified before publishing.
+        </p>
+        <a href="{{ url_for('essays') }}">Browse essays &rarr;</a>
+    </div>
+    <div class="card">
+        <span class="card__icon">&#127919;</span>
+        <h3>Share Your Experience</h3>
+        <p>
+            Reached the second round? Help future applicants by sharing up to 7 essays.
+            Upload text or PDF/Word documents.
+        </p>
+        <a href="{{ url_for('submit') }}">Submit your essays &rarr;</a>
+    </div>
+    <div class="card">
+        <span class="card__icon">&#129309;</span>
+        <h3>Volunteer as Moderator</h3>
+        <p>
+            Help us maintain quality and trust. Moderators review submitted essays
+            and verification screenshots before they go live.
+        </p>
+        <a href="{{ url_for('volunteer') }}">Apply to volunteer &rarr;</a>
+    </div>
+</section>
+
+<!-- UWC Values -->
+<section class="section">
+    <h2 class="section__title">UWC Values</h2>
+    <div class="values-grid">
+        <div class="value-card">
+            <span class="value-card__icon">&#127758;</span>
+            <h4>International Understanding</h4>
+            <p>Fostering mutual understanding across nations and cultures.</p>
+        </div>
+        <div class="value-card">
+            <span class="value-card__icon">&#127752;</span>
+            <h4>Celebrating Difference</h4>
+            <p>Diversity is our classroom - students from 155+ countries.</p>
+        </div>
+        <div class="value-card">
+            <span class="value-card__icon">&#128153;</span>
+            <h4>Personal Responsibility</h4>
+            <p>Acting with integrity, compassion, and service to others.</p>
+        </div>
+        <div class="value-card">
+            <span class="value-card__icon">&#127793;</span>
+            <h4>Environmental Stewardship</h4>
+            <p>Respect for the environment and sustainable future.</p>
+        </div>
+    </div>
+</section>
+
+<!-- About UWC -->
+<section class="section">
+    <h2 class="section__title">What is UWC?</h2>
+    <div class="uwc-info">
+        <div class="uwc-info__text">
+            <p>
+                <strong>United World Colleges</strong> is a global education movement with 18 schools
+                and colleges across four continents. Founded in 1962, UWC brings together young people
+                from over 155 countries with the mission of making education a force to unite people,
+                nations, and cultures for peace and a sustainable future.
+            </p>
+            <p>
+                Students study the <strong>International Baccalaureate Diploma Programme (IBDP)</strong>,
+                a respected curriculum that prepares them for university and fosters community support,
+                leadership, teamwork, and creativity. More than 80% of UWC students receive financial
+                support thanks to generous donors and partners.
+            </p>
+            <p>
+                UWC seeks compassionate, idealistic students eager to improve the world.
+                National committees in over 150 countries select students from various backgrounds
+                and cultures, fostering understanding and different perspectives.
+            </p>
+            <blockquote class="uwc-quote">
+                "We celebrate diversity. Our national committees in over 150 countries select students
+                from various backgrounds and cultures, fostering understanding and different perspectives."
+                <cite>- UWC International</cite>
+            </blockquote>
+        </div>
+        <div class="uwc-info__stats">
+            <div class="stat-card">
+                <span class="stat-card__number">18</span>
+                <span class="stat-card__label">Schools Worldwide</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__number">155+</span>
+                <span class="stat-card__label">Countries & Territories</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__number">1962</span>
+                <span class="stat-card__label">Year Founded</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__number">85K+</span>
+                <span class="stat-card__label">Alumni Worldwide</span>
+            </div>
+            <div class="stat-card" style="grid-column: span 2;">
+                <span class="stat-card__number">80%+</span>
+                <span class="stat-card__label">Students Receive Financial Support</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- UWC Schools Highlights -->
+<section class="section">
+    <h2 class="section__title">UWC Schools Around the World</h2>
+    <p style="color: var(--text-mid); margin-bottom: var(--space-lg);">
+        Each UWC school has its own character, shaped by its location and community. Here are some of the 18 schools:
+    </p>
+    <div class="schools-grid">
+        <a href="https://www.atlanticcollege.org/" target="_blank" class="school-chip">&#127468;&#127463; UWC Atlantic - Wales</a>
+        <a href="https://www.pearsoncollege.ca/" target="_blank" class="school-chip">&#127464;&#127462; UWC Pearson - Canada</a>
+        <a href="https://www.uwcmahindracollege.org/" target="_blank" class="school-chip">&#127470;&#127475; UWC Mahindra - India</a>
+        <a href="https://uwcrcn.no/" target="_blank" class="school-chip">&#127475;&#127476; UWC Red Cross Nordic - Norway</a>
+        <a href="https://www.lpcuwc.edu.hk/" target="_blank" class="school-chip">&#127469;&#127472; UWC Li Po Chun - Hong Kong</a>
+        <a href="https://www.waterford.sz/" target="_blank" class="school-chip">&#127487;&#127462; Waterford Kamhlaba UWC - Eswatini</a>
+        <a href="https://uwcmostar.ba/" target="_blank" class="school-chip">&#127462;&#127474; UWC in Mostar - Bosnia</a>
+        <a href="https://www.uwcad.it/" target="_blank" class="school-chip">&#127470;&#127481; UWC Adriatic - Italy</a>
+        <a href="https://www.uwcsea.edu.sg/" target="_blank" class="school-chip">&#127480;&#127468; UWC South East Asia - Singapore</a>
+        <a href="https://www.uwcrobertboschcollege.de/" target="_blank" class="school-chip">&#127465;&#127466; UWC Robert Bosch - Germany</a>
+        <a href="https://uwcdilijan.org/" target="_blank" class="school-chip">&#127479;&#127484; UWC Dilijan - Armenia</a>
+        <a href="https://www.uwccostarica.org/" target="_blank" class="school-chip">&#127464;&#127479; UWC Costa Rica - Costa Rica</a>
+        <a href="https://www.uwcchangshu.org/" target="_blank" class="school-chip">&#127464;&#127475; UWC Changshu - China</a>
+        <a href="https://uwcisak.jp/" target="_blank" class="school-chip">&#127471;&#127477; UWC ISAK - Japan</a>
+        <a href="https://www.uwcea.org/" target="_blank" class="school-chip">&#127481;&#127487; UWC East Africa - Tanzania</a>
+        <a href="https://www.uwc-usa.org/" target="_blank" class="school-chip">&#127482;&#127480; UWC-USA - New Mexico</a>
+        <a href="https://www.uwcmaastricht.nl/" target="_blank" class="school-chip">&#127475;&#127473; UWC Maastricht - Netherlands</a>
+        <a href="https://www.uwcthailand.ac.th/" target="_blank" class="school-chip">&#127481;&#127469; UWC Thailand - Thailand</a>
+    </div>
+</section>
+
+<!-- Education & Impact -->
+<section class="section">
+    <h2 class="section__title">An Education Like No Other</h2>
+    <div class="impact-grid">
+        <div class="impact-card">
+            <h3>IB Diploma Programme</h3>
+            <p>
+                All UWC students study the internationally recognized IBDP. This rigorous academic
+                program prepares students for university worldwide and fosters critical thinking,
+                intercultural understanding, and respect.
+            </p>
+        </div>
+        <div class="impact-card">
+            <h3>Davis UWC Scholars</h3>
+            <p>
+                UWC graduates can access the Davis UWC Scholars program, which has provided funding
+                for over 14,700 students in U.S. universities, including Ivy League colleges.
+            </p>
+        </div>
+        <div class="impact-card">
+            <h3>Lifelong Impact</h3>
+            <p>
+                Scholarship and alumni initiatives drive change in climate, justice, human rights
+                and more. The alumni network spans 85,000+ graduates across the globe.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section">
+    <h2 class="section__title">How UWC Compass Works</h2>
+    <div class="steps">
+        <div class="step">
+            <span class="step__number">1</span>
+            <h4>Submit</h4>
+            <p>Share up to 7 essays and proof you reached the second round.</p>
+        </div>
+        <div class="step">
+            <span class="step__number">2</span>
+            <h4>Verify</h4>
+            <p>Volunteer moderators review your submission and screenshot.</p>
+        </div>
+        <div class="step">
+            <span class="step__number">3</span>
+            <h4>Publish</h4>
+            <p>Approved essays appear publicly for future applicants.</p>
+        </div>
+        <div class="step">
+            <span class="step__number">4</span>
+            <h4>Inspire</h4>
+            <p>Future candidates discover real essays and gain confidence.</p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

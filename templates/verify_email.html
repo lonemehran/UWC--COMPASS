@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Verify Email - UWC Compass{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-card__icon">✉️</div>
+        <h1>Verify Your Email</h1>
+        <p style="color: var(--text-mid); margin-bottom: var(--space-xl);">
+            We sent a 6-digit confirmation code to <strong>{{ email }}</strong>.<br>
+            Please enter it below to complete your submission.
+        </p>
+
+        <form method="POST" action="{{ url_for('verify_email', essay_id=request.view_args['essay_id']) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-group">
+                <label for="otp">Verification Code</label>
+                <input type="text" id="otp" name="otp" required pattern="\d{6}" maxlength="6" 
+                       placeholder="123456" style="text-align: center; letter-spacing: 0.5em; font-size: 1.5em; text-transform: uppercase;">
+            </div>
+            
+            <button type="submit" class="btn btn--primary" style="width: 100%;">Verify & Submit Essay</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

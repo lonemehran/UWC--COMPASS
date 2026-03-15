@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Volunteer as Moderator - UWC Compass{% endblock %}
+
+{% block content %}
+
+<div class="form-page">
+    <div class="form-page__intro">
+        <h1>Volunteer as a Moderator</h1>
+        <p>
+            Help us maintain the quality and credibility of UWC Compass. As a volunteer moderator,
+            you will review essay submissions and verify that they meet our standards before they
+            go public.
+        </p>
+        <p>
+            Your application will be reviewed by our admin team. If approved, you'll receive
+            login credentials for the volunteer dashboard.
+        </p>
+    </div>
+
+    <div class="notice-box" style="background: #e8f4fd; border-color: #b3d9f2;">
+        <h3 style="color: #1a5276;">Identity Verification Required</h3>
+        <p style="color: #1a5276; margin-bottom: 0;">
+            To ensure the integrity of our moderation team, you must upload a photo of a valid
+            government-issued ID. You <strong>may cover your face</strong> if you prefer - the ID
+            just needs to prove your identity. This image is stored securely and visible only to the admin.
+        </p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-section">
+            <h2 class="form-section__title">Your Information</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Full Name <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" value="{{ name }}" required placeholder="Your full name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" value="{{ email }}" required placeholder="your@email.com">
+                    <span class="hint">Used to send you volunteer credentials if approved.</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="country">Country <span class="required">*</span></label>
+                <input type="text" id="country" name="country" value="{{ country }}" required placeholder="e.g. India">
+            </div>
+
+            <div class="form-group">
+                <label for="motivation">Why do you want to volunteer? <span class="required">*</span></label>
+                <textarea id="motivation" name="motivation" required rows="5"
+                          placeholder="Tell us about your connection to UWC and why you want to help moderate essay submissions...">{{ motivation }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="id_photo">Government ID Photo <span class="required">*</span></label>
+                <div class="file-input">
+                    <input type="file" id="id_photo" name="id_photo" accept=".jpg,.jpeg,.png" required>
+                </div>
+                <span class="hint">
+                    Upload a photo of a valid government-issued ID (passport, national ID, driver's license).
+                    You may cover your face - the ID just needs to confirm your identity.
+                    Accepted formats: JPG, JPEG, PNG. Maximum size: 10 MB.
+                </span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--lg">Submit Application</button>
+    </form>
+
+    <div style="margin-top: var(--space-xl); text-align: center;">
+        <p style="color: var(--text-light); font-size: 0.875rem;">
+            Already a volunteer? <a href="{{ url_for('volunteer_login') }}">Log in to your dashboard</a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

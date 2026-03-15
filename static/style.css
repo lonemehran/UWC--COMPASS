@@ -30,7 +30,7 @@
   --red:          #c0392b;
   --red-bg:       #fdf0ed;
 
-  --font-heading: 'Source Serif 4', 'Georgia', serif;
+  --font-heading: 'Playfair Display', 'Georgia', serif;
   --font-body:    'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;
   --font-mono:    'SF Mono', 'Consolas', monospace;
 
@@ -42,7 +42,7 @@
   --space-2xl: 4rem;
   --space-3xl: 6rem;
 
-  --max-width: 1200px;
+  --max-width: 1400px;
   --reading-width: 750px;
   --radius: 12px;
   --radius-sm: 8px;
@@ -310,9 +310,11 @@ main { flex:1; }
 }
 .hero__content h1 {
   color: var(--white);
-  font-size: 3.25rem;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 4rem;
   margin-bottom: var(--space-lg);
-  line-height: 1.15;
+  line-height: 1.1;
 }
 .hero__content p {
   color: rgba(255,255,255,0.85);

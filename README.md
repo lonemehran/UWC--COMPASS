@@ -45,16 +45,9 @@ python app.py
 
 Visit **http://localhost:5000** in your browser.
 
-### Default Admin Credentials
-
-| Field    | Value          |
-|----------|----------------|
-| Username | `lonemehran`   |
-| Password | `LONEMEHRAN8899` |
-
 Access the admin dashboard at **http://localhost:5000/admin**
 
-> ⚠️ **Change these credentials before deploying to production.** Edit the `init_db()` function in `app.py`.
+
 
 ---
 
@@ -102,32 +95,6 @@ git push -u origin main
 
 ---
 
-## Deploy on Render
-
-1. Push your code to GitHub (see above)
-2. Go to [render.com](https://render.com) and create a new **Web Service**
-3. Connect your GitHub repository
-4. Configure the service:
-
-| Setting        | Value                    |
-|----------------|--------------------------|
-| Build Command  | `pip install -r requirements.txt` |
-| Start Command  | `gunicorn app:app`       |
-| Environment    | Python 3                 |
-
-5. Add environment variables:
-
-| Key          | Value                          |
-|--------------|--------------------------------|
-| `SECRET_KEY` | (generate a random 32+ char string) |
-
-6. Click **Deploy**
-
-### Important Notes for Render
-
-- SQLite works for low-traffic sites. For higher traffic, migrate to PostgreSQL.
-- Uploaded files on Render's free tier are **ephemeral** (lost on redeploy). For persistent file storage, use a service like [Cloudinary](https://cloudinary.com) or [AWS S3](https://aws.amazon.com/s3/).
-- Set `SECRET_KEY` to a long random string in production (never use the default).
 
 ---
 

@@ -730,19 +730,33 @@ def admin_essay_edit(essay_id):
         
     if request.method == 'POST':
         name = request.form.get('name', '').strip()
+        country = request.form.get('country', '').strip()
         year_applied = request.form.get('year_applied', '').strip()
         interview_status = request.form.get('interview_status', '').strip()
         created_at = request.form.get('created_at', '').strip()
         
+        # Reconstruct essays list from form
+        essay_count = int(request.form.get('essay_count', 0))
+        new_essays = []
+        for i in range(essay_count):
+            p = request.form.get(f'prompt_{i}', '').strip()
+            r = request.form.get(f'response_{i}', '').strip()
+            if r:
+                new_essays.append({'prompt': p, 'response': r})
+        
         errors = []
         if not name:
             errors.append('Name is required.')
+        if not country:
+            errors.append('Country is required.')
         if not year_applied or not year_applied.isdigit():
             errors.append('Year applied must be a valid year.')
         if interview_status not in ('yes', 'no', 'pending'):
             errors.append('Interview status must be valid.')
         if not created_at:
             errors.append('Submitted date is required.')
+        if not new_essays:
+            errors.append('At least one essay response is required.')
             
         if errors:
             for error in errors:
@@ -751,9 +765,9 @@ def admin_essay_edit(essay_id):
             
         db.execute('''
             UPDATE essays 
-            SET name = ?, year_applied = ?, interview_status = ?, created_at = ?
+            SET name = ?, country = ?, year_applied = ?, interview_status = ?, created_at = ?, essays_json = ?
             WHERE id = ?
-        ''', (name, int(year_applied), interview_status, created_at, essay_id))
+        ''', (name, country, int(year_applied), interview_status, created_at, json.dumps(new_essays), essay_id))
         db.commit()
         
         log_action(session['username'], 'admin', 'edited', 'essay', essay_id)

@@ -496,12 +496,35 @@ def verify_email(essay_id):
 @app.route('/essays')
 def essays():
     db = get_db()
-    rows = db.execute('''
+    
+    # Get filter parameters
+    nc_filter = request.args.get('nc', '').strip()
+    year_filter = request.args.get('year', '').strip()
+    
+    # Base query
+    query = '''
         SELECT id, name, country, national_committee, year_applied,
                interview_status, essays_json, created_at
-        FROM essays WHERE status = ? ORDER BY created_at DESC
-    ''', ('approved',)).fetchall()
-    return render_template('essays.html', essays=rows)
+        FROM essays WHERE status = ?
+    '''
+    params = ['approved']
+    
+    if nc_filter:
+        query += ' AND national_committee = ?'
+        params.append(nc_filter)
+    if year_filter:
+        query += ' AND year_applied = ?'
+        params.append(year_filter)
+        
+    query += ' ORDER BY created_at DESC'
+    
+    rows = db.execute(query, tuple(params)).fetchall()
+    
+    # Fetch unique filter options
+    committees = db.execute('SELECT DISTINCT national_committee FROM essays WHERE status = ? ORDER BY national_committee', ('approved',)).fetchall()
+    years = db.execute('SELECT DISTINCT year_applied FROM essays WHERE status = ? ORDER BY year_applied DESC', ('approved',)).fetchall()
+    
+    return render_template('essays.html', essays=rows, committees=[c[0] for c in committees], years=[y[0] for y in years], current_nc=nc_filter, current_year=year_filter)
 
 
 @app.route('/essay/<int:essay_id>')
@@ -693,6 +716,51 @@ def admin_essay_flag(essay_id):
     log_action(session['username'], 'admin', action, 'essay', essay_id)
     flash(f'Essay has been {action}.', 'success')
     return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/essay/<int:essay_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def admin_essay_edit(essay_id):
+    db = get_db()
+    essay = db.execute('SELECT * FROM essays WHERE id = ?', (essay_id,)).fetchone()
+    
+    if essay is None:
+        flash('Essay not found.', 'error')
+        return redirect(url_for('admin_dashboard'))
+        
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        year_applied = request.form.get('year_applied', '').strip()
+        interview_status = request.form.get('interview_status', '').strip()
+        created_at = request.form.get('created_at', '').strip()
+        
+        errors = []
+        if not name:
+            errors.append('Name is required.')
+        if not year_applied or not year_applied.isdigit():
+            errors.append('Year applied must be a valid year.')
+        if interview_status not in ('yes', 'no', 'pending'):
+            errors.append('Interview status must be valid.')
+        if not created_at:
+            errors.append('Submitted date is required.')
+            
+        if errors:
+            for error in errors:
+                flash(error, 'error')
+            return render_template('admin_edit_essay.html', essay=essay)
+            
+        db.execute('''
+            UPDATE essays 
+            SET name = ?, year_applied = ?, interview_status = ?, created_at = ?
+            WHERE id = ?
+        ''', (name, int(year_applied), interview_status, created_at, essay_id))
+        db.commit()
+        
+        log_action(session['username'], 'admin', 'edited', 'essay', essay_id)
+        flash('Essay details updated successfully.', 'success')
+        return redirect(url_for('admin_dashboard'))
+        
+    return render_template('admin_edit_essay.html', essay=essay)
 
 
 @app.route('/admin/user/block', methods=['POST'])

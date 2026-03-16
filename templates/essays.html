@@ -13,6 +13,36 @@
     </p>
 </div>
 
+<!-- Filters -->
+<div class="filters-section" style="margin-bottom: var(--space-xl); background: var(--off-white); padding: var(--space-md) var(--space-lg); border-radius: var(--radius-sm); border: 1px solid var(--grey-200);">
+    <form method="GET" action="{{ url_for('essays') }}" class="filters-form" style="display: flex; gap: var(--space-md); flex-wrap: wrap; align-items: flex-end;">
+        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 200px;">
+            <label for="nc" style="font-size: 0.85rem;">National Committee</label>
+            <select name="nc" id="nc" style="padding: 0.5rem; font-size: 0.9rem;">
+                <option value="">All Committees</option>
+                {% for nc in committees %}
+                <option value="{{ nc }}" {% if current_nc == nc %}selected{% endif %}>{{ nc }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+            <label for="year" style="font-size: 0.85rem;">Year Applied</label>
+            <select name="year" id="year" style="padding: 0.5rem; font-size: 0.9rem;">
+                <option value="">All Years</option>
+                {% for year in years %}
+                <option value="{{ year }}" {% if current_year|string == year|string %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="display: flex; gap: var(--space-sm);">
+            <button type="submit" class="btn btn--primary btn--small" style="height: 42px;">Filter</button>
+            {% if current_nc or current_year %}
+            <a href="{{ url_for('essays') }}" class="btn btn--outline btn--small" style="height: 42px;">Clear</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
 {% if essays %}
 <div class="essay-list">
     {% for entry in essays %}

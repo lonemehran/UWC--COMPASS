@@ -49,7 +49,10 @@
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
-  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --glass: rgba(255, 255, 255, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.1);
+  --transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html { font-size:16px; scroll-behavior:smooth; }
@@ -452,7 +455,7 @@ main { flex:1; }
   gap: var(--space-xl);
   text-align: center;
 }
-.stat-item {}
+
 .stat-item__number {
   font-family: var(--font-heading);
   font-size: 3rem;
@@ -496,6 +499,105 @@ main { flex:1; }
 }
 .value-card h4 { margin-bottom: var(--space-sm); color: var(--blue-deep); }
 .value-card p { color: var(--grey-500); font-size: 0.9rem; margin-bottom: 0; }
+/* --- Schools Map Section ------------------------------------------- */
+.schools-map { margin-bottom: var(--space-2xl); }
+#uwc-map { 
+  border-radius: var(--radius); 
+  border: 1px solid var(--grey-200); 
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.schools-catalog {
+  margin-top: 2rem;
+  position: relative;
+  z-index: 5;
+  padding: 0 var(--space-xl);
+}
+
+.school-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+.school-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  text-decoration: none;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.school-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: var(--maroon);
+  transform: scaleY(0);
+  transition: transform var(--transition);
+}
+
+.school-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+  background: var(--white);
+  border-color: var(--maroon-light);
+}
+
+.school-card:hover::before {
+  transform: scaleY(1);
+}
+
+.school-card__flag {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.school-card__info {
+  display: flex;
+  flex-direction: column;
+}
+
+.school-card__name {
+  font-weight: 700;
+  color: var(--blue-deep);
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.school-card__location {
+  font-size: 0.75rem;
+  color: var(--grey-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+.school-card__arrow {
+  margin-left: auto;
+  color: var(--grey-300);
+  font-size: 1.2rem;
+  transition: transform var(--transition), color var(--transition);
+}
+
+.school-card:hover .school-card__arrow {
+  transform: translateX(4px);
+  color: var(--maroon);
+}
+
+/* Old chip styles for compatibility or removal */
+.schools-list { display: none; }
 
 /* --- Schools Grid -------------------------------------------------- */
 .schools-grid {
@@ -852,8 +954,9 @@ main { flex:1; }
   font-size: 1.05rem;
   line-height: 1.85;
   color: var(--grey-700);
-  white-space: pre-wrap;
+  white-space: pre-line;
   word-wrap: break-word;
+  margin-bottom: var(--space-md);
 }
 .essay-reading__document {
   background: var(--off-white);
@@ -994,7 +1097,7 @@ main { flex:1; }
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   line-height: 1.7;
-  white-space: pre-wrap;
+  white-space: pre-line;
   word-wrap: break-word;
   margin-bottom: var(--space-md);
 }
@@ -1175,11 +1278,25 @@ main { flex:1; }
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
 .stagger-children.visible > *:nth-child(1) { transition-delay: 0s; opacity: 1; transform: translateY(0); }
-.stagger-children.visible > *:nth-child(2) { transition-delay: 0.1s; opacity: 1; transform: translateY(0); }
-.stagger-children.visible > *:nth-child(3) { transition-delay: 0.2s; opacity: 1; transform: translateY(0); }
-.stagger-children.visible > *:nth-child(4) { transition-delay: 0.3s; opacity: 1; transform: translateY(0); }
-.stagger-children.visible > *:nth-child(5) { transition-delay: 0.4s; opacity: 1; transform: translateY(0); }
-.stagger-children.visible > *:nth-child(6) { transition-delay: 0.5s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(2) { transition-delay: 0.05s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(3) { transition-delay: 0.1s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(4) { transition-delay: 0.15s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(5) { transition-delay: 0.2s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(6) { transition-delay: 0.25s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(7) { transition-delay: 0.3s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(8) { transition-delay: 0.35s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(9) { transition-delay: 0.4s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(10) { transition-delay: 0.45s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(11) { transition-delay: 0.5s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(12) { transition-delay: 0.55s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(13) { transition-delay: 0.6s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(14) { transition-delay: 0.65s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(15) { transition-delay: 0.7s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(16) { transition-delay: 0.75s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(17) { transition-delay: 0.8s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(18) { transition-delay: 0.85s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(19) { transition-delay: 0.9s; opacity: 1; transform: translateY(0); }
+.stagger-children.visible > *:nth-child(20) { transition-delay: 0.95s; opacity: 1; transform: translateY(0); }
 
 /* Scroll to top */
 .scroll-top {
@@ -1206,49 +1323,100 @@ main { flex:1; }
 .scroll-top:hover { background: var(--maroon); transform: translateY(-2px); }
 
 /* --- Responsive ---------------------------------------------------- */
+/* --- Responsive Optimization --------------------------------------- */
+
+/* --- Laptop / Tablet Landscape (768px - 1024px) --- */
+@media (max-width: 1024px) {
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  .container { padding: 0 var(--space-xl); }
+  .cards-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-lg); }
+  .values-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-lg); }
+  .impact-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-lg); }
+  .uwc-info { grid-template-columns: 1fr; }
+  .uwc-info__stats { grid-template-columns: repeat(3, 1fr); }
+  .stat-card[style*="grid-column: span 2;"] { grid-column: span 3 !important; }
+}
+
+/* --- Mobile / Tablet Portrait (Up to 768px) --- */
 @media (max-width: 768px) {
   h1 { font-size: 2rem; }
   h2 { font-size: 1.6rem; }
+  h3 { font-size: 1.35rem; }
+  p { font-size: 0.95rem; }
+  
   .container { padding: 0 var(--space-lg); }
 
-  .hero { min-height: 400px; }
+  .hero { min-height: 480px; }
   .hero__content h1 { font-size: 2.25rem; }
   .hero__content p { font-size: 1rem; }
-  .hero__content { padding: var(--space-2xl) var(--space-lg); }
-
+  .hero__content { padding: var(--space-2xl) 0; }
+  
+  .section { padding: var(--space-2xl) 0; }
+  
   .nav__links {
     display: none;
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 70px; left: 0; right: 0; bottom: 0;
     background: var(--white);
     flex-direction: column;
-    padding: 80px var(--space-xl) var(--space-xl);
+    padding: var(--space-lg);
     z-index: 999;
+    border-top: 1px solid var(--grey-200);
   }
   .nav__links.open { display: flex; }
-  .nav__links li a { font-size: 1.2rem; padding: var(--space-md) 0; border-bottom: 1px solid var(--grey-200); }
+  .nav__links li { width: 100%; text-align: center; }
+  .nav__links li a { display: block; font-size: 1.1rem; padding: var(--space-md) 0; border-bottom: 1px solid var(--grey-100); }
   .nav__links li a.active::after { display: none; }
   .nav__toggle { display: block; z-index: 1001; }
   .nav__cta { display: none; }
 
-  .form-row { grid-template-columns: 1fr; }
-  .uwc-info { grid-template-columns: 1fr; }
-  .footer__grid { grid-template-columns: 1fr; gap: var(--space-xl); }
-  .footer__bottom { flex-direction: column; text-align: center; }
+  .cards-grid, .values-grid, .impact-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+  .form-row { grid-template-columns: 1fr; gap: var(--space-md); }
+  
+  .filters-form { flex-direction: column; align-items: stretch !important; gap: var(--space-sm) !important; }
+  .filters-form .form-group { width: 100%; margin-bottom: var(--space-sm) !important; }
+  .filters-form button, .filters-form a { flex: 1; }
+  
+  .essay-card__meta { flex-wrap: wrap; gap: var(--space-xs); line-height: 1.4; }
+  .essay-reading__meta-grid { grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+  .essay-reading__body { font-size: 1rem; line-height: 1.75; }
+  
+  .uwc-info__stats { grid-template-columns: repeat(2, 1fr); }
+  .stat-card[style*="grid-column: span 3 !important;"] { grid-column: span 2 !important; }
+  
+  .footer__grid { grid-template-columns: 1fr; gap: var(--space-xl); text-align: center; }
+  .footer__brand { justify-content: center; }
+  .footer__social { justify-content: center; }
+  .footer__bottom { flex-direction: column; text-align: center; gap: var(--space-md); }
 
-  .contact-card { flex-direction: column; align-items: center; text-align: center; }
-  .admin-header { flex-direction: column; gap: var(--space-md); align-items: flex-start; }
-  .admin-card__header { flex-direction: column; }
-  .steps { grid-template-columns: 1fr 1fr; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .section { padding: var(--space-2xl) 0; }
-  .essay-reading__meta-grid { grid-template-columns: 1fr 1fr; }
+  .contact-card { flex-direction: column; align-items: center; text-align: center; gap: var(--space-lg); }
+  .admin-header { flex-direction: column; gap: var(--space-md); align-items: stretch; }
+  .admin-header > div:last-child { display: flex; flex-direction: column; width: 100%; gap: var(--space-sm); }
+  .admin-header > div:last-child form, .admin-header > div:last-child a { width: 100%; display: block; text-align: center; }
+  .admin-card__header { flex-direction: column; gap: var(--space-md); }
+  .admin-card__actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+  .admin-card__actions form, .admin-card__actions a { width: 100%; }
+  .admin-card__actions button { width: 100%; }
+  
+  .steps { grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+  
   .top-bar { display: none; }
+
+  .school-grid {
+    grid-template-columns: 1fr;
+    padding: 0 var(--space-sm);
+  }
 }
 
+/* --- Small Mobile (Up to 480px) --- */
 @media (max-width: 480px) {
   .steps { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr; }
-  .hero__actions { flex-direction: column; align-items: stretch; }
-  .hero__actions .btn { justify-content: center; }
+  .hero__actions { flex-direction: column; align-items: stretch; gap: var(--space-md); }
+  .hero__actions .btn { justify-content: center; width: 100%; }
+  .uwc-info__stats { grid-template-columns: 1fr; }
+  .stat-card[style*="grid-column: span 2 !important;"] { grid-column: span 1 !important; }
+  .essay-reading__meta-grid { grid-template-columns: 1fr; }
 }

@@ -187,29 +187,176 @@
             <h2>UWC Schools Around the World</h2>
             <p>Each UWC school has its own character, shaped by its location and community.</p>
         </div>
-        <div class="schools-map fade-in" style="text-align: center; margin-bottom: var(--space-xl);">
-            <img src="https://uwc.org/wp-content/uploads/2025/03/worldmap.png" alt="Map of UWC Colleges Worldwide" loading="lazy" style="max-width: 100%; height: auto; border-radius: var(--radius-md);">
+        <div class="schools-map fade-in" style="margin-bottom: var(--space-xl);">
+            <!-- Leaflet Map Container -->
+            <div id="uwc-map" style="height: 500px; width: 100%; border-radius: var(--radius-md); z-index: 1;"></div>
         </div>
-        <div class="schools-grid fade-in">
-            <a href="https://www.atlanticcollege.org/" target="_blank" class="school-chip">&#127468;&#127463; UWC Atlantic — Wales</a>
-            <a href="https://www.pearsoncollege.ca/" target="_blank" class="school-chip">&#127464;&#127462; UWC Pearson — Canada</a>
-            <a href="https://www.uwcmahindracollege.org/" target="_blank" class="school-chip">&#127470;&#127475; UWC Mahindra — India</a>
-            <a href="https://uwcrcn.no/" target="_blank" class="school-chip">&#127475;&#127476; UWC Red Cross Nordic — Norway</a>
-            <a href="https://www.lpcuwc.edu.hk/" target="_blank" class="school-chip">&#127469;&#127472; UWC Li Po Chun — Hong Kong</a>
-            <a href="https://www.waterford.sz/" target="_blank" class="school-chip">&#127487;&#127462; Waterford Kamhlaba UWC — Eswatini</a>
-            <a href="https://uwcmostar.ba/" target="_blank" class="school-chip">&#127462;&#127474; UWC in Mostar — Bosnia</a>
-            <a href="https://www.uwcad.it/" target="_blank" class="school-chip">&#127470;&#127481; UWC Adriatic — Italy</a>
-            <a href="https://www.uwcsea.edu.sg/" target="_blank" class="school-chip">&#127480;&#127468; UWC South East Asia — Singapore</a>
-            <a href="https://www.uwcrobertboschcollege.de/" target="_blank" class="school-chip">&#127465;&#127466; UWC Robert Bosch — Germany</a>
-            <a href="https://uwcdilijan.org/" target="_blank" class="school-chip">&#127479;&#127484; UWC Dilijan — Armenia</a>
-            <a href="https://www.uwccostarica.org/" target="_blank" class="school-chip">&#127464;&#127479; UWC Costa Rica</a>
-            <a href="https://www.uwcchangshu.org/" target="_blank" class="school-chip">&#127464;&#127475; UWC Changshu — China</a>
-            <a href="https://uwcisak.jp/" target="_blank" class="school-chip">&#127471;&#127477; UWC ISAK — Japan</a>
-            <a href="https://www.uwcea.org/" target="_blank" class="school-chip">&#127481;&#127487; UWC East Africa — Tanzania</a>
-            <a href="https://www.uwc-usa.org/" target="_blank" class="school-chip">&#127482;&#127480; UWC-USA — New Mexico</a>
-            <a href="https://www.uwcmaastricht.nl/" target="_blank" class="school-chip">&#127475;&#127473; UWC Maastricht — Netherlands</a>
-            <a href="https://www.uwcthailand.ac.th/" target="_blank" class="school-chip">&#127481;&#127469; UWC Thailand</a>
+        <div class="schools-catalog">
+        <div class="school-grid stagger-children">
+            <a href="https://www.atlanticcollege.org/" target="_blank" class="school-card">
+                <span class="school-card__iso">GB</span>
+                <span class="school-card__flag">🇬🇧</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Atlantic</span>
+                    <span class="school-card__location">Wales</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.pearsoncollege.ca/" target="_blank" class="school-card">
+                <span class="school-card__iso">CA</span>
+                <span class="school-card__flag">🇨🇦</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Pearson</span>
+                    <span class="school-card__location">Canada</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwccompass.org.in/" target="_blank" class="school-card">
+                <span class="school-card__iso">IN</span>
+                <span class="school-card__flag">🇮🇳</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Mahindra</span>
+                    <span class="school-card__location">India</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwcrcn.no/" target="_blank" class="school-card">
+                <span class="school-card__iso">NO</span>
+                <span class="school-card__flag">🇳🇴</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Red Cross Nordic</span>
+                    <span class="school-card__location">Norway</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.lpcuwc.edu.hk/" target="_blank" class="school-card">
+                <span class="school-card__iso">HK</span>
+                <span class="school-card__flag">🇭🇰</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Li Po Chun</span>
+                    <span class="school-card__location">Hong Kong</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.waterford.sz/" target="_blank" class="school-card">
+                <span class="school-card__iso">SZ</span>
+                <span class="school-card__flag">🇸🇿</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">Waterford Kamhlaba UWC</span>
+                    <span class="school-card__location">Eswatini</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://uwcmostar.ba/" target="_blank" class="school-card">
+                <span class="school-card__iso">BA</span>
+                <span class="school-card__flag">🇧🇦</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC in Mostar</span>
+                    <span class="school-card__location">Bosnia & Herzegovina</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwcad.it/" target="_blank" class="school-card">
+                <span class="school-card__iso">IT</span>
+                <span class="school-card__flag">🇮🇹</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Adriatic</span>
+                    <span class="school-card__location">Italy</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwcsea.edu.sg/" target="_blank" class="school-card">
+                <span class="school-card__iso">SG</span>
+                <span class="school-card__flag">🇸🇬</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC South East Asia</span>
+                    <span class="school-card__location">Singapore</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwcrobertboschcollege.de/" target="_blank" class="school-card">
+                <span class="school-card__iso">DE</span>
+                <span class="school-card__flag">🇩🇪</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Robert Bosch</span>
+                    <span class="school-card__location">Germany</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://uwcdilijan.org/" target="_blank" class="school-card">
+                <span class="school-card__iso">AM</span>
+                <span class="school-card__flag">🇦🇲</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Dilijan</span>
+                    <span class="school-card__location">Armenia</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwccostarica.org/" target="_blank" class="school-card">
+                <span class="school-card__iso">CR</span>
+                <span class="school-card__flag">🇨🇷</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Costa Rica</span>
+                    <span class="school-card__location">Costa Rica</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwcchangshu.org/" target="_blank" class="school-card">
+                <span class="school-card__iso">CN</span>
+                <span class="school-card__flag">🇨🇳</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Changshu</span>
+                    <span class="school-card__location">China</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://uwcisak.jp/" target="_blank" class="school-card">
+                <span class="school-card__iso">JP</span>
+                <span class="school-card__flag">🇯🇵</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC ISAK</span>
+                    <span class="school-card__location">Japan</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwcea.org/" target="_blank" class="school-card">
+                <span class="school-card__iso">TZ</span>
+                <span class="school-card__flag">🇹🇿</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC East Africa</span>
+                    <span class="school-card__location">Tanzania</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwc-usa.org/" target="_blank" class="school-card">
+                <span class="school-card__iso">US</span>
+                <span class="school-card__flag">🇺🇸</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC-USA</span>
+                    <span class="school-card__location">USA</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwcmaastricht.nl/" target="_blank" class="school-card">
+                <span class="school-card__iso">NL</span>
+                <span class="school-card__flag">🇳🇱</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Maastricht</span>
+                    <span class="school-card__location">Netherlands</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
+            <a href="https://www.uwcthailand.ac.th/" target="_blank" class="school-card">
+                <span class="school-card__iso">TH</span>
+                <span class="school-card__flag">🇹🇭</span>
+                <div class="school-card__info">
+                    <span class="school-card__name">UWC Thailand</span>
+                    <span class="school-card__location">Thailand</span>
+                </div>
+                <span class="school-card__arrow">→</span>
+            </a>
         </div>
+    </div>
     </div>
 </section>
 
@@ -280,4 +427,48 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block scripts %}
+<!-- Leaflet JS for Map -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('uwc-map')) {
+            var map = L.map('uwc-map').setView([20, 0], 2); // Centered loosely on the world
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            var uwcs = [
+                { name: "UWC Atlantic", lat: 51.401, lon: -3.532, url: "https://www.atlanticcollege.org/" },
+                { name: "UWC Pearson", lat: 48.337, lon: -123.532, url: "https://www.pearsoncollege.ca/" },
+                { name: "UWC Mahindra", lat: 18.528, lon: 73.578, url: "https://www.uwcmahindracollege.org/" },
+                { name: "UWC Red Cross Nordic", lat: 61.272, lon: 5.319, url: "https://uwcrcn.no/" },
+                { name: "UWC Li Po Chun", lat: 22.428, lon: 114.241, url: "https://www.lpcuwc.edu.hk/" },
+                { name: "Waterford Kamhlaba UWC", lat: -26.304, lon: 31.118, url: "https://www.waterford.sz/" },
+                { name: "UWC in Mostar", lat: 43.342, lon: 17.810, url: "https://uwcmostar.ba/" },
+                { name: "UWC Adriatic", lat: 45.767, lon: 13.599, url: "https://www.uwcad.it/" },
+                { name: "UWC South East Asia", lat: 1.306, lon: 103.774, url: "https://www.uwcsea.edu.sg/" },
+                { name: "UWC Robert Bosch", lat: 47.986, lon: 7.822, url: "https://www.uwcrobertboschcollege.de/" },
+                { name: "UWC Dilijan", lat: 40.741, lon: 44.862, url: "https://uwcdilijan.org/" },
+                { name: "UWC Costa Rica", lat: 9.940, lon: -84.187, url: "https://www.uwccostarica.org/" },
+                { name: "UWC Changshu", lat: 31.597, lon: 120.697, url: "https://www.uwcchangshu.org/" },
+                { name: "UWC ISAK", lat: 36.353, lon: 138.601, url: "https://uwcisak.jp/" },
+                { name: "UWC East Africa", lat: -3.344, lon: 36.687, url: "https://www.uwcea.org/" },
+                { name: "UWC-USA", lat: 35.656, lon: -105.289, url: "https://www.uwc-usa.org/" },
+                { name: "UWC Maastricht", lat: 50.858, lon: 5.719, url: "https://www.uwcmaastricht.nl/" },
+                { name: "UWC Thailand", lat: 8.046, lon: 98.349, url: "https://www.uwcthailand.ac.th/" }
+            ];
+
+            uwcs.forEach(function(school) {
+                var marker = L.marker([school.lat, school.lon]).addTo(map);
+                marker.bindPopup(`<strong>${school.name}</strong><br><a href="${school.url}" target="_blank">Visit Website</a>`);
+            });
+        }
+    });
+</script>
 {% endblock %}

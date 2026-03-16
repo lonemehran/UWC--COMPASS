@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Edit Essay - UWC Compass{% endblock %}
+
+{% block content %}
+
+<div class="form-page fade-in">
+    <div class="form-page__intro">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn--outline btn--small" style="margin-bottom: var(--space-md);">&larr; Back to Dashboard</a>
+        <h1>Edit Essay Details</h1>
+        <p>You can edit the metadata of the essay submitted by <strong>{{ essay['name'] }}</strong>.</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('admin_essay_edit', essay_id=essay['id']) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-section">
+            <h2 class="form-section__title">Applicant Details</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Name <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" value="{{ essay['name'] }}" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="year_applied">Year Applied <span class="required">*</span></label>
+                    <input type="number" id="year_applied" name="year_applied" min="1960" max="2030" value="{{ essay['year_applied'] }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="interview_status">Interview Status <span class="required">*</span></label>
+                    <div style="position: relative;">
+                        <select id="interview_status" name="interview_status" required>
+                            <option value="yes" {% if essay['interview_status'] == 'yes' %}selected{% endif %}>Selected for Interview</option>
+                            <option value="no" {% if essay['interview_status'] == 'no' %}selected{% endif %}>Not Selected</option>
+                            <option value="pending" {% if essay['interview_status'] == 'pending' %}selected{% endif %}>Results Pending</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="created_at">Submitted Date <span class="required">*</span></label>
+                    <input type="text" id="created_at" name="created_at" value="{{ essay['created_at'] }}" required>
+                    <span class="hint">Format: YYYY-MM-DD HH:MM:SS</span>
+                </div>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: var(--space-md);">
+            <button type="submit" class="btn btn--primary">Save Changes</button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn--outline">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
